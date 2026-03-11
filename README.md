@@ -79,16 +79,12 @@ Runtime systems inside `main.js`:
 
 ## Deployment notes (GitHub Pages)
 
-This app is fully static, so use **Deploy from a branch** with the **branch root** folder.
+This is static-only content and deploys directly to GitHub Pages:
 
-Recommended setup:
-
-1. Push this feature branch and open/merge the PR.
-2. In GitHub repository settings, open **Pages**.
-3. Set source to your deployment branch (typically `main`) and folder to **`/ (root)`**.
-4. Save and wait for Pages to publish.
-
-If you intentionally keep a separate site branch, branch root is still correct as long as `index.html` stays at the top level.
+1. Push branch to GitHub.
+2. Merge PR.
+3. In repository settings, set Pages source to branch root (or `/docs` if you relocate files).
+4. Access the deployed URL.
 
 No server or build pipeline is required.
 
