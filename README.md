@@ -31,6 +31,8 @@ Optional: use any local static server if your browser blocks some autoplay/audio
 - `F / V`: flaps increase / decrease
 - `[` / `]`: trim nose down / up
 - `Space`: wheel brakes
+- `B`: toggle parking brake
+- `I`: engine start / stop
 - `C`: toggle camera (cockpit/chase)
 - `P`: pause
 - `R`: restart run
@@ -78,6 +80,28 @@ Runtime systems inside `main.js`:
 - `AudioController`: lightweight procedural engine/touchdown audio via WebAudio
 
 ## Deployment notes (GitHub Pages)
+
+This app is fully static, so use **Deploy from a branch** with the **branch root** folder.
+
+Recommended setup:
+
+1. Push this feature branch and open/merge the PR.
+2. In GitHub repository settings, open **Pages**.
+3. Set source to your deployment branch (typically `main`) and folder to **`/ (root)`**.
+4. Save and wait for Pages to publish.
+
+If you intentionally keep a separate site branch, branch root is still correct as long as `index.html` stays at the top level.
+
+No server or build pipeline is required.
+
+## First-time remote push (step-by-step)
+
+If your local repo has no remote yet:
+
+1. Create an empty GitHub repository.
+2. Add it as origin: `git remote add origin https://github.com/<user>/<repo>.git`
+3. Verify: `git remote -v`
+4. Push branch: `git push -u origin feat/browser-flight-sim`
 
 This is static-only content and deploys directly to GitHub Pages:
 

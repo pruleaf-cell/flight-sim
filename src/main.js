@@ -528,6 +528,10 @@ function updateInstruments(sim) {
   ui.flp.textContent = `${s.flap * 10}°`;
   ui.trm.textContent = `${Math.round(s.trim * 100)}%`;
   ui.wnd.textContent = `${Math.round(degrees(sim.wind.dir)).toString().padStart(3, '0')}/${Math.round(sim.wind.speed)} kt`;
+  ui.eng.textContent = s.engineOn ? `${Math.round(s.rpm)} RPM` : 'OFF';
+
+  const rwy = runwayMetrics(s.x, s.z, s.heading);
+  ui.status.textContent = `${sim.mode.toUpperCase()} | ${sim.phase.toUpperCase()} | Camera ${sim.cameraMode} | PB ${s.parkingBrake ? 'ON' : 'OFF'} | Runway align ${(rwy.headingError * 57.3).toFixed(1)}°`;
 
   const rwy = runwayMetrics(s.x, s.z, s.heading);
   ui.status.textContent = `${sim.mode.toUpperCase()} | ${sim.phase.toUpperCase()} | Camera ${sim.cameraMode} | Runway align ${(rwy.headingError * 57.3).toFixed(1)}°`;
