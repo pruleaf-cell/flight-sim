@@ -9,7 +9,7 @@ The design goal is a believable general-aviation feel for a single-engine light 
 - **Genre:** desktop-first flight simulation prototype
 - **Aircraft:** single-engine light prop analogue with flap/trim/rudder/brakes
 - **Core loop:** start on runway environment → fly a circuit → land with scoring → restart
-- **Modes:** Free Flight + Assisted Training + Cold Start
+- **Modes:** Free Flight + Assisted Training
 - **Platform:** static HTML/CSS/JS (no backend, no build step)
 
 ## How to run locally
@@ -102,6 +102,15 @@ If your local repo has no remote yet:
 2. Add it as origin: `git remote add origin https://github.com/<user>/<repo>.git`
 3. Verify: `git remote -v`
 4. Push branch: `git push -u origin feat/browser-flight-sim`
+
+This is static-only content and deploys directly to GitHub Pages:
+
+1. Push branch to GitHub.
+2. Merge PR.
+3. In repository settings, set Pages source to branch root (or `/docs` if you relocate files).
+4. Access the deployed URL.
+
+No server or build pipeline is required.
 
 ## Known limitations
 

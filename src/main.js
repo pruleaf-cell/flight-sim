@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 const ui = {
   hud: document.getElementById('hud'),
   ias: document.getElementById('ias'), alt: document.getElementById('alt'), vs: document.getElementById('vs'), hdg: document.getElementById('hdg'),
-  thr: document.getElementById('thr'), flp: document.getElementById('flp'), trm: document.getElementById('trm'), wnd: document.getElementById('wnd'), eng: document.getElementById('eng'),
+  thr: document.getElementById('thr'), flp: document.getElementById('flp'), trm: document.getElementById('trm'), wnd: document.getElementById('wnd'),
   warnings: document.getElementById('warnings'), status: document.getElementById('status-strip'),
   start: document.getElementById('start-screen'), pause: document.getElementById('pause-menu'), settings: document.getElementById('settings-panel'),
   controls: document.getElementById('controls-panel'), centerMessage: document.getElementById('center-message'),
@@ -43,23 +43,20 @@ class Simulator {
   }
 
   initialState() {
-    const cold = this.mode === 'cold';
     return {
-      x: cold ? -186 : 0, z: cold ? -500 : -420, y: 1.1,
+      x: 0, z: -420, y: 1.1,
       roll: 0, pitch: 0, heading: radians(0),
       rollRate: 0, pitchRate: 0, yawRate: 0,
       airspeed: 0, vs: 0,
-      throttleCmd: cold ? 0 : 0.38,
-      enginePower: cold ? 0 : 0.35,
+      throttleCmd: 0.38,
+      enginePower: 0.35,
       flap: 0,
       trim: 0,
       rudder: 0,
       brake: 0,
-      parkingBrake: cold ? 1 : 0,
-      engineOn: !cold,
       onGround: true,
       crashed: false,
-      rpm: cold ? 0 : 950,
+      rpm: 950,
     };
   }
 
@@ -69,7 +66,7 @@ class Simulator {
     this.ended = false;
     this.score = null;
     this.state = this.initialState();
-    this.message(this.mode === 'cold' ? 'Cold and dark. Press I to start engine, release parking brake (B), then taxi.' : 'Taxi to centerline, apply power, and rotate near 55 kt.');
+    this.message('Taxi to centerline, apply power, and rotate near 55 kt.');
   }
 
   setPaused(v) {
@@ -105,8 +102,7 @@ class Simulator {
     const cd = 0.026 + flapDrag + Math.pow(cl, 2) / (Math.PI * 8.5 * 0.76);
     const drag = q * wingArea * cd;
 
-    const powerTarget = s.engineOn ? s.throttleCmd : 0;
-    s.enginePower += (powerTarget - s.enginePower) * clamp(dt * 1.8, 0, 1);
+    s.enginePower += (s.throttleCmd - s.enginePower) * clamp(dt * 1.8, 0, 1);
     const maxThrust = 3300;
     const thrust = maxThrust * s.enginePower * clamp(1 - s.y / 17000, 0.62, 1);
 
@@ -120,7 +116,7 @@ class Simulator {
     if (s.onGround) {
       const rotateTendency = clamp((s.airspeed - 26) / 35, 0, 1);
       if (rotateTendency > 0.2) s.vs += verticalAccel * dt * rotateTendency;
-      const taxiFriction = 0.02 + s.brake * 0.22 + s.parkingBrake * 0.3;
+      const taxiFriction = 0.02 + s.brake * 0.22;
       s.airspeed = Math.max(0, s.airspeed - taxiFriction * g * dt);
       s.pitch += (-s.pitch) * dt * 2.8;
       s.roll += (-s.roll) * dt * 3.2;
@@ -161,7 +157,7 @@ class Simulator {
     }
     this.prevOnGround = s.onGround;
 
-    s.rpm = s.engineOn ? 700 + s.enginePower * 2100 : 0;
+    s.rpm = 700 + s.enginePower * 2100;
     this.audio.update(s, stall, s.onGround);
 
     this.updatePhase(stall);
@@ -437,8 +433,8 @@ class AudioController {
     if (!settings.audioEnabled) return;
     this.ensure();
     if (!this.ctx) return;
-    this.engineOsc.frequency.value = 45 + state.rpm * 0.06;
-    this.engineGain.gain.value = (state.engineOn ? 0.015 : 0.001) + state.enginePower * 0.04 + (stall ? 0.01 : 0);
+    this.engineOsc.frequency.value = 65 + state.rpm * 0.06;
+    this.engineGain.gain.value = 0.015 + state.enginePower * 0.04 + (stall ? 0.01 : 0);
     if (onGround && state.brake > 0.4 && state.airspeed > 12) this.engineGain.gain.value += 0.015;
   }
 
@@ -466,12 +462,6 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyR') sim.reset();
   if (e.code === 'KeyC') sim.cameraMode = sim.cameraMode === 'cockpit' ? 'chase' : 'cockpit';
   if (e.code === 'KeyH') settings.trainingHints = !settings.trainingHints;
-  if (e.code === 'KeyB') sim.state.parkingBrake = sim.state.parkingBrake ? 0 : 1;
-  if (e.code === 'KeyI') {
-    sim.state.engineOn = !sim.state.engineOn;
-    if (sim.state.engineOn && sim.state.throttleCmd < 0.08) sim.state.throttleCmd = 0.08;
-    sim.message(sim.state.engineOn ? 'Engine started.' : 'Engine shut down.');
-  }
   if (e.code === 'KeyF') sim.state.flap = clamp(sim.state.flap + 1, 0, 3);
   if (e.code === 'KeyV') sim.state.flap = clamp(sim.state.flap - 1, 0, 3);
   if (e.code === 'BracketRight') sim.state.trim = clamp(sim.state.trim + 0.06, -0.5, 0.5);
@@ -542,6 +532,9 @@ function updateInstruments(sim) {
 
   const rwy = runwayMetrics(s.x, s.z, s.heading);
   ui.status.textContent = `${sim.mode.toUpperCase()} | ${sim.phase.toUpperCase()} | Camera ${sim.cameraMode} | PB ${s.parkingBrake ? 'ON' : 'OFF'} | Runway align ${(rwy.headingError * 57.3).toFixed(1)}°`;
+
+  const rwy = runwayMetrics(s.x, s.z, s.heading);
+  ui.status.textContent = `${sim.mode.toUpperCase()} | ${sim.phase.toUpperCase()} | Camera ${sim.cameraMode} | Runway align ${(rwy.headingError * 57.3).toFixed(1)}°`;
 
   const warns = [];
   if (s.airspeed < 26 && !s.onGround) warns.push('LOW AIRSPEED');
