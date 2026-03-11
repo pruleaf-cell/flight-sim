@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Runway Circuit Simulator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="sim-canvas" width="1280" height="720" aria-label="Flight simulator viewport"></canvas>
+
+    <div id="hud" class="panel hidden">
+      <div class="strip" id="status-strip"></div>
+      <div class="instruments">
+        <div class="instrument"><label>Airspeed</label><span id="ias">0 kt</span></div>
+        <div class="instrument"><label>Altitude</label><span id="alt">0 ft</span></div>
+        <div class="instrument"><label>V/S</label><span id="vs">0 fpm</span></div>
+        <div class="instrument"><label>Heading</label><span id="hdg">000°</span></div>
+        <div class="instrument"><label>Throttle</label><span id="thr">0%</span></div>
+        <div class="instrument"><label>Flaps</label><span id="flp">0°</span></div>
+        <div class="instrument"><label>Trim</label><span id="trm">0%</span></div>
+        <div class="instrument"><label>Wind</label><span id="wnd">000/0</span></div>
+        <div class="instrument"><label>Engine</label><span id="eng">OFF</span></div>
+      </div>
+      <div id="warnings"></div>
+    </div>
+
+    <div id="center-message" class="hidden"></div>
+
+    <div id="start-screen" class="overlay visible">
+      <div class="card">
+        <h1>Runway Circuit Simulator</h1>
+        <p class="subtitle">A desktop browser light-aircraft landing trainer.</p>
+        <div class="button-row">
+          <button data-mode="free" class="primary">Free Flight</button>
+          <button data-mode="training">Assisted Training</button>
+          <button data-mode="cold">Cold Start</button>
+        </div>
+        <div class="button-row small">
+          <button id="open-settings">Settings</button>
+          <button id="open-controls">Controls</button>
+        </div>
+        <p id="best-score">Best landing score: --</p>
+      </div>
+    </div>
+
+    <div id="pause-menu" class="overlay hidden">
+      <div class="card">
+        <h2>Paused</h2>
+        <div class="button-row">
+          <button id="resume-btn" class="primary">Resume</button>
+          <button id="restart-btn">Restart</button>
+        </div>
+        <div class="button-row small">
+          <button id="pause-settings">Settings</button>
+          <button id="pause-controls">Controls</button>
+          <button id="quit-btn">Quit to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings-panel" class="overlay hidden">
+      <div class="card">
+        <h2>Settings</h2>
+        <label>Wind strength <input id="wind-strength" type="range" min="0" max="20" value="8" /></label>
+        <label>Training hints <input id="hint-toggle" type="checkbox" checked /></label>
+        <label>Audio enabled <input id="audio-toggle" type="checkbox" checked /></label>
+        <label>Show flight path cue <input id="fpa-toggle" type="checkbox" checked /></label>
+        <div class="button-row"><button id="save-settings" class="primary">Save</button><button id="close-settings">Close</button></div>
+      </div>
+    </div>
+
+    <div id="controls-panel" class="overlay hidden">
+      <div class="card">
+        <h2>Controls</h2>
+        <ul>
+          <li>W / S: pitch down / up</li>
+          <li>A / D: roll left / right</li>
+          <li>Q / E: rudder left / right (and nosewheel steering)</li>
+          <li>Arrow Up / Arrow Down: throttle</li>
+          <li>F / V: flaps increase / decrease</li>
+          <li>[ / ]: trim nose down / up</li>
+          <li>Space: wheel brakes</li>
+          <li>B: parking brake toggle</li>
+          <li>I: engine start / stop</li>
+          <li>C: camera view</li>
+          <li>P: pause</li>
+          <li>R: restart run</li>
+          <li>H: toggle HUD help cues</li>
+        </ul>
+        <div class="button-row"><button id="close-controls" class="primary">Close</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
